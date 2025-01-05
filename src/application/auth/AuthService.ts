@@ -7,7 +7,11 @@ export default class AuthService implements IAuthService {
     constructor(private requestBuilder:IRequestBuilder) {}
 
     public async registerUser(login: string, password: string) {
-
+        let registerAnswer = await this.requestBuilder
+            .withRequestBody(command)
+            .addHeader("x", "y")
+            .withResponseModel<UserProfile>()
+            .sendGet("");
     };
 
     public signInUser() {
@@ -15,5 +19,6 @@ export default class AuthService implements IAuthService {
             .addHeader("x", "y")
             .withResponseModel<UserProfile>()
             .sendGet("");
+
     };
 }

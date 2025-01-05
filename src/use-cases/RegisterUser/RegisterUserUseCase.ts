@@ -1,12 +1,6 @@
-type RegisterUserCommand = {
-    login: string,
-    password: string
-}
+import {useInjection} from "useInjection";
 
-const registerUserUseCase = (command:RegisterUserCommand) => {
-    let registerAnswer = await this.requestBuilder
-        .withRequestBody(command)
-        .addHeader("x", "y")
-        .withResponseModel<UserProfile>()
-        .sendGet("");
-};
+const RegisterUserRequest = () => {
+    const authService = useInjection<IAuthService>();
+    let result = await authService.registerUser(command.login, command.password);
+}
