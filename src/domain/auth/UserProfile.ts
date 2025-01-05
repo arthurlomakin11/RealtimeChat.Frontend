@@ -1,3 +1,5 @@
 class UserProfile {
 
 }
+
+export {UserProfile}

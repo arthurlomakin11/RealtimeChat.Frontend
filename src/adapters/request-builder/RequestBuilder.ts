@@ -1,11 +1,14 @@
-import axios, {Method} from "axios";
-import {IBodyBuilderStep, IFinalStep, IPreBodyBuilderStep, IRequestBuilder} from "./Interfaces";
-import {ModelRequestBodyBuilder} from "./ModelRequestBodyBuilder";
-import {IRequestBuilderSettings} from "./IRequestBuilderSettings";
+import axios, { Method } from "axios";
+import { IFinalStep, IPreBodyBuilderStep, IRequestBuilder } from "./Steps";
+import { ModelRequestBodyBuilder } from "./ModelRequestBodyBuilder";
+import { IRequestBuilderSettings } from "./IRequestBuilderSettings";
+import { IRequestModel } from "./IRequestModel";
+import { Result, ok, err } from "neverthrow";
 
 class RequestBuilder implements IRequestBuilder {
-    private _settings:IRequestBuilderSettings = {
-        Headers: {}, RequestBody: null
+    private _settings: IRequestBuilderSettings = {
+        Headers: {},
+        RequestBody: null
     };
 
     addHeader(name: string, value: string): IPreBodyBuilderStep {
@@ -18,17 +21,29 @@ class RequestBuilder implements IRequestBuilder {
         return this;
     }
 
-    withResponseModel<T>():IFinalStep<T> {
-        return new ModelRequestBodyBuilder<T>(this.send);
+    withRequestModel(model: IRequestModel): IPreBodyBuilderStep {
+        this._settings.RequestBody = JSON.stringify(model);
+        return this;
     }
 
-    private async send(method:Method, url: string):Promise<string> {
-        let response = await axios.request({
-            url: url,
-            headers: this._settings.Headers,
-            method: method,
-            withCredentials: true
-        });
-        return response.data;
+    withResponseModel<T>(): IFinalStep<T> {
+        return new ModelRequestBodyBuilder<T>(this._settings, this.send);
+    }
+
+    private async send(settings: IRequestBuilderSettings, method: Method, url: string): Promise<Result<string, Error>> {
+        try {
+            const response = await axios.request<string>({
+                url: url,
+                headers: settings.Headers,
+                data: settings.RequestBody,
+                method: method,
+                responseType: "text"
+            });
+            return ok(response.data);
+        } catch (error) {
+            return err(error instanceof Error ? error : new Error("Unknown error occurred"));
+        }
     }
 }
+
+export { RequestBuilder };

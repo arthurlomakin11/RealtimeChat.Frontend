@@ -1,24 +1,31 @@
-import {IRequestBuilder} from "../../adapters/request-builder/Interfaces";
-import {IAuthService} from "./IAuthService";
-import {injectable} from "inversify";
+import type { IRequestBuilder } from "@/adapters/request-builder/Steps";
+import { IAuthService } from "./IAuthService";
+import { inject, injectable } from "inversify";
+import { UserProfile } from "@/domain/auth/UserProfile";
+import { di_types } from "@/types";
+import { SignInCommand } from "./SignInCommand";
+import { RegisterCommand } from "./RegisterCommand";
+import { Result } from "neverthrow";
 
 @injectable()
 export default class AuthService implements IAuthService {
-    constructor(private requestBuilder:IRequestBuilder) {}
+    constructor(@inject(di_types.IRequestBuilder) private requestBuilder: IRequestBuilder) {}
 
-    public async registerUser(login: string, password: string) {
-        let registerAnswer = await this.requestBuilder
-            .withRequestBody(command)
-            .addHeader("x", "y")
-            .withResponseModel<UserProfile>()
-            .sendGet("");
-    };
+    public async registerUser(command: RegisterCommand): Promise<Result<UserProfile, Error>> {
+        const response = await this.requestBuilder
+            .withRequestModel(command)
+            .withResponseModel<Result<UserProfile, Error>>()
+            .sendPost("http://localhost:5104/account/register");
 
-    public signInUser() {
-        let x = await this.requestBuilder
-            .addHeader("x", "y")
-            .withResponseModel<UserProfile>()
-            .sendGet("");
+        return response.mapErr(error => new Error(`Register user failed: ${error.message}`));
+    }
 
-    };
+    public async signInUser(command: SignInCommand): Promise<Result<UserProfile, Error>> {
+        const response = await this.requestBuilder
+            .withRequestModel(command)
+            .withResponseModel<Result<UserProfile, Error>>()
+            .sendPost("http://localhost:5104/account/login?useCookies=true&useSessionCookies=true");
+
+        return response.mapErr(error => new Error(`Sign-in failed: ${error.message}`));
+    }
 }

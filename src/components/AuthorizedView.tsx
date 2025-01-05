@@ -1,5 +1,9 @@
 import React, {ReactNode} from "react";
+import RegisterUserRequest from "@/use-cases/RegisterUser/RegisterUserUseCase";
 
-export default function AuthorizedView(props: {children: ReactNode}) {
-    return children;
+const AuthorizedView = () => {
+    let x = RegisterUserRequest();
+    return <div></div>;
 }
+
+export {AuthorizedView}

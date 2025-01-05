@@ -1,27 +1,28 @@
-import {Method} from "axios";
-import {IFinalStep} from "./Interfaces";
+import { Method } from "axios";
+import { IFinalStep } from "./Steps";
+import { IRequestBuilderSettings } from "./IRequestBuilderSettings";
+import { Result } from "neverthrow";
 
-type sendActionFunction = (method:Method, url: string) => Promise<string>;
+type sendActionFunction = (settings: IRequestBuilderSettings, method: Method, url: string) => Promise<Result<string, Error>>;
 
 class ModelRequestBodyBuilder<T> implements IFinalStep<T> {
-    private readonly _sendAction: sendActionFunction;
+    constructor(
+        private settings: IRequestBuilderSettings,
+        private sendAction: sendActionFunction
+    ) {}
 
-    constructor(sendAction: sendActionFunction) {
-        this._sendAction = sendAction;
+    public async send(httpMethod: Method, url: string): Promise<Result<T, Error>> {
+        const response = await this.sendAction(this.settings, httpMethod, url);
+        return response.map(data => JSON.parse(data) as T);
     }
 
-    public async send(httpMethod:Method, url: string):Promise<T> {
-        let response = await this._sendAction(httpMethod, url);
-        return response.json() as T;
-    }
-
-    public async sendGet(url: string): Promise<T> {
+    public async sendGet(url: string): Promise<Result<T, Error>> {
         return this.send("GET", url);
     }
 
-    public async sendPost(url: string): Promise<T> {
+    public async sendPost(url: string): Promise<Result<T, Error>> {
         return this.send("POST", url);
     }
 }
 
-export {ModelRequestBodyBuilder};
+export { ModelRequestBodyBuilder };
