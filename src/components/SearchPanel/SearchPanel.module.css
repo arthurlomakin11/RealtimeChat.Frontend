@@ -1,0 +1,15 @@
+.searchPanel {
+    background-color: var(--color-sidebar-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 8px;
+    display: flex;
+}
+
+.input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: var(--font-size);
+    color: var(--color-text);
+}

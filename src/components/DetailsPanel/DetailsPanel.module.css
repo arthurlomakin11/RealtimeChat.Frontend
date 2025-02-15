@@ -1,0 +1,49 @@
+.detailsPanel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 16px;
+    background-color: var(--background-color);
+    border-left: 1px solid var(--border-color);
+    overflow-y: auto;
+}
+
+.infoSection,
+.projectOverview,
+.threadActivity,
+.membersSection {
+    margin-bottom: 24px;
+}
+
+h3 {
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.activityChart {
+    height: 100px;
+    background-color: var(--secondary-color-light);
+    border-radius: 4px;
+}
+
+.projectOverview {
+    margin-bottom: 24px;
+}
+
+.chatInOverview {
+    margin-top: 16px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 16px;
+}

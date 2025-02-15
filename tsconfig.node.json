@@ -17,6 +17,7 @@
 
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "jsx": "react-jsx",
 
     /* Linting */
     "strict": true,

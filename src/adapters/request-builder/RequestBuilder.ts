@@ -4,6 +4,7 @@ import { ModelRequestBodyBuilder } from "./ModelRequestBodyBuilder";
 import { IRequestBuilderSettings } from "./IRequestBuilderSettings";
 import { IRequestModel } from "./IRequestModel";
 import { Result, ok, err } from "neverthrow";
+import { RawRequestBodyBuilder } from "./RawRequestBodyBuilder";
 
 class RequestBuilder implements IRequestBuilder {
     private _settings: IRequestBuilderSettings = {
@@ -30,6 +31,10 @@ class RequestBuilder implements IRequestBuilder {
         return new ModelRequestBodyBuilder<T>(this._settings, this.send);
     }
 
+    withRawResponse(): IFinalStep<string> {
+        return new RawRequestBodyBuilder(this._settings, this.send);
+    }
+
     private async send(settings: IRequestBuilderSettings, method: Method, url: string): Promise<Result<string, Error>> {
         try {
             const response = await axios.request<string>({
@@ -37,10 +42,12 @@ class RequestBuilder implements IRequestBuilder {
                 headers: settings.Headers,
                 data: settings.RequestBody,
                 method: method,
-                responseType: "text"
+                responseType: "text",
+                withCredentials: true
             });
             return ok(response.data);
-        } catch (error) {
+        }
+        catch (error) {
             return err(error instanceof Error ? error : new Error("Unknown error occurred"));
         }
     }

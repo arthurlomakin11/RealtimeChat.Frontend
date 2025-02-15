@@ -16,7 +16,8 @@ interface IAddHeaderStep extends IBodyBuilderStep {
 interface IPreBodyBuilderStep extends IAddHeaderStep, IWithRequest {}
 
 interface IBodyBuilderStep {
-    withResponseModel<T>():IFinalStep<T>
+    withResponseModel<T>(): IFinalStep<T>
+    withRawResponse():IFinalStep<string>
 }
 
 interface IFinalStep<T> {
