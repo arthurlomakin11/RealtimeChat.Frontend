@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'

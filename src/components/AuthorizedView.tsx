@@ -1,22 +1,24 @@
 import { IAuthService } from "@/application/auth/IAuthService";
 import { diTypes } from "@/types";
-import { InjectableComponent } from "@/utils/injectableComponent";
-import { useAsync } from "@/utils/useAsync";
+import { injectableComponent } from "@/utils/injectableComponent";
+import { ReactElement } from "react";
+import { useAsync } from "react-use";
 
-const AuthorizedViewRaw = ({ authService }: { authService: IAuthService }) => {
-    const { result } = useAsync(() =>
-        authService.isSignedIn()
+const AuthorizedViewRaw =
+    ({ authService, Auth, NotAuth }: { authService: IAuthService, Auth: ReactElement, NotAuth: ReactElement }) => {
+    const { value, error, loading } = useAsync(
+        async () => authService.isSignedIn(),
+        [authService]
     );
 
-    if (result == null) {
-        return <div></div>;
-    }
+    if (loading) return <div>Loading...</div>;
+    if (error || value === undefined) return <div>Error: {error?.message}</div>;
 
-    const isSignedIn = result.andThen(innerResult => innerResult).unwrapOr(false);
-    return <div>{isSignedIn.toString()}</div>;
-}
+    const isSignedIn = value.unwrapOr(false);
+    return isSignedIn ? Auth : NotAuth;
+};
 
-const AuthorizedView = InjectableComponent(AuthorizedViewRaw, {
+const AuthorizedView = injectableComponent(AuthorizedViewRaw, {
     authService: diTypes.IAuthService
 });
 

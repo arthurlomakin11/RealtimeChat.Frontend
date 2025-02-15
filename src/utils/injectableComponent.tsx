@@ -2,7 +2,7 @@
 import { useContainer } from "inversify-react";
 import React from 'react';
 
-export function InjectableComponent<
+export function injectableComponent<
     P extends Record<string, any>, // Original props type
     D extends Partial<Record<keyof P, symbol>> // Dependencies mapped to symbols, optional, must match keys of P
 >(

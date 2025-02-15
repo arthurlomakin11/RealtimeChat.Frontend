@@ -9,11 +9,18 @@ import { AuthorizedView } from './components/AuthorizedView';
 const App = () => {
 	return <>
 		<Provider container={container}>
-			<AuthorizedView />
 			<div className={styles.app}>
-				<Sidebar />
-				<MainContent />
-				<DetailsPanel />
+			<AuthorizedView
+				Auth = {
+					<>
+						<Sidebar />
+						<MainContent />
+						<DetailsPanel />
+					</>
+				}
+
+				NotAuth = {<div>Not authorized</div>}
+			/>
 			</div>
 		</Provider>
 	</>;

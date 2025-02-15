@@ -36,11 +36,10 @@ export default class AuthService implements IAuthService {
 
     public async isSignedIn(): Promise<Result<boolean, Error>>
     {
-        console.log(import.meta.env);
         const response = await this.requestBuilder
             .withRawResponse()
             .sendGet(`${this.config.baseUrl}/auth-ping`);
-
+        
         return response
             .map(() => true)
             .mapErr(error => new Error(error.message));
