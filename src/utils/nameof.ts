@@ -1,1 +1,0 @@
-export const nameof = (type:string) => type;

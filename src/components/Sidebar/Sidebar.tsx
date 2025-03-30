@@ -5,17 +5,13 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-    { label: 'General' },
-    { label: 'Front-end' },
-    { label: 'Website' },
-    { label: 'Strategy' },
+    { label: 'Chat' }
 ];
 
 const Sidebar = () => {
     return (
         <div className={styles.sidebar}>
-            <div className={styles.logo}>Conceptzilla</div>
-            <div className={styles.section}>Favorites</div>
+            <div className={styles.logo}>Realtime Chat</div>
             <ul className={styles.menu}>
                 {menuItems.map((item, index) => (
                     <li key={index}>{item.label}</li>

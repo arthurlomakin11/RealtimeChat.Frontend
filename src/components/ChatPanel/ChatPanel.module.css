@@ -84,3 +84,19 @@
 .sendButton:hover {
     background-color: var(--primary-color-dark);
 }
+
+.messageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.messageDate {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.messageContent {
+    margin-left: 8px;
+}

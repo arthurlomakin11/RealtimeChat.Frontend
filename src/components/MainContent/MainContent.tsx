@@ -7,11 +7,7 @@ const MainContent: React.FC = () => {
     return (
         <div className={styles.main}>
             <SearchPanel />
-            <div className={styles.content}>
-                <h1>Project Overview</h1>
-                <p>Details about the project go here.</p>
-                <ChatPanel />
-            </div>
+            <ChatPanel chatRoomId={1} />
         </div>
     );
 };
