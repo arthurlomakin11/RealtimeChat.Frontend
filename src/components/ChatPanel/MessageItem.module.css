@@ -1,0 +1,29 @@
+.message {
+    margin-bottom: 12px;
+}
+
+.messageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.messageDate {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.messageContent {
+    padding: 8px 12px;
+    border-radius: 12px;
+    display: inline-block;
+    max-width: 70%;
+    background-color: var(--secondary-color-light);
+    color: var(--text-color);
+    margin-left: 8px;
+}
+
+.outgoing .messageContent {
+    background-color: var(--primary-color-light);
+}

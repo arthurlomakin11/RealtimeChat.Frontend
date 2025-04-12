@@ -16,6 +16,22 @@ export const GET_MESSAGES = gql`
   }
 `;
 
+export const GET_FILTERED_MESSAGES = gql`
+  query GetFilteredMessages($chatRoomId: Int!, $searchString: String!) {
+    filteredMessages(chatRoomId: $chatRoomId, searchString: $searchString) {
+      chatRoomId
+      id
+      senderId
+      sentAt
+      content {
+        ... on TextMessageContentGraph {
+          text
+        }
+      }
+    }
+  }
+`;
+
 export const MESSAGE_SUBSCRIPTION = gql`
   subscription subscription {
     onMessageUpdated {

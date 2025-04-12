@@ -1,129 +1,57 @@
-import React, { useState, useEffect } from "react";
-import { useMutation, useQuery, useSubscription } from "@apollo/client";
-import {
-  MESSAGE_SUBSCRIPTION,
-  SEND_MESSAGE,
-  EDIT_MESSAGE,
-  DELETE_MESSAGE,
-  GET_MESSAGES,
-} from "./subscriptions";
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+import { useState } from "react";
+import { useMutation } from "@apollo/client";
 import styles from "./ChatPanel.module.css";
-import { formatDate } from "@/utils/formatDate";
+import { useMessages } from "@/hooks/useMessages";
+import { MessageItem } from "./MessageItem";
+import { MessageInput } from "./MessageInput";
+import { DELETE_MESSAGE, EDIT_MESSAGE, SEND_MESSAGE } from "@/graphql/subscriptions";
 
-interface Message {
-  id: number;
-  senderId: string;
-  content: { text?: string; url?: string };
-  sentAt: string;
-}
+export const ChatPanel = ({ chatRoomId }: { chatRoomId: number }) => {
+  const [input, setInput] = useState("");
+  const [search, setSearch] = useState("");
 
-const ChatPanel: React.FC<{ chatRoomId: number }> = ({ chatRoomId }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState<string>("");
-
-  const { loading, error, data: initialData } = useQuery(GET_MESSAGES, {
-    variables: { id: chatRoomId },
-    fetchPolicy: "network-only" // Don't use cache
-  });
-    
-  useEffect(() => {
-    if (initialData?.messages) {
-      setMessages(initialData.messages);
-    }
-  }, [initialData])
-    
-  const { data } = useSubscription(MESSAGE_SUBSCRIPTION);
-
-  useEffect(() => {
-    if (data?.onMessageUpdated) {
-      const { eventType, message } = data.onMessageUpdated;
-
-      let newMessages:Message[] = [];
-
-      if (eventType === "ADDED") {
-        newMessages = [...messages, message];
-      }
-      else if (eventType === "UPDATED") {
-        newMessages = messages.map((m) => (m.id === message.id ? message : m));
-      }
-      else if (eventType === "DELETED") {
-        newMessages = messages.filter((m) => m.id !== message.id);
-      }
-
-      setMessages(newMessages);
-    }
-    
-  }, [data]);
-
+  const { messages, loading } = useMessages(chatRoomId, search);
   const [sendMessage] = useMutation(SEND_MESSAGE);
+  const [editMessage] = useMutation(EDIT_MESSAGE);
+  const [deleteMessage] = useMutation(DELETE_MESSAGE);
 
-  const handleSendMessage = async () => {
-    if (input.trim() === "") return;
+  const handleSend = async () => {
+    if (!input.trim()) return;
     await sendMessage({ variables: { chatRoomId, senderId: "45f74bba-165c-447f-b251-d02aaab12e81", text: input } });
     setInput("");
   };
 
-  const [editMessage] = useMutation(EDIT_MESSAGE);
-
-  const handleEditMessage = async (messageId: number) => {
-    const newText = prompt("Enter new message text:");
-    if (newText) {
-      await editMessage({ variables: { messageId, newText } });
-    }
+  const handleEdit = async (id: number) => {
+    const newText = prompt("New text?");
+    if (newText) await editMessage({ variables: { messageId: id, newText } });
   };
 
-  const [deleteMessage] = useMutation(DELETE_MESSAGE);
-
-  const handleDeleteMessage = async (messageId: number) => {
-    if (window.confirm("Are you sure you want to delete this message?")) {
-      await deleteMessage({ variables: { messageId } });
-    }
+  const handleDelete = async (id: number) => {
+    if (confirm("Delete?")) await deleteMessage({ variables: { messageId: id } });
   };
 
   return (
     <div className={styles.chatPanel}>
-      <div className={styles.chatHeader}>Chat</div>
-      {
-        loading ? "Loading" :
+      <div className={styles.chatHeader}>
+        Chat
+        <input
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ marginLeft: "1rem" }}
+        />
+      </div>
+      {loading ? "Loading..." : (
         <>
           <div className={styles.messages}>
-          {messages.map((message) => (
-            <div key={message.id} className={styles.message}>
-              <div>
-                <div className={styles.messageHeader}>
-                  <strong>{message.senderId}</strong>
-                  <span className={styles.messageDate}>
-                    {formatDate(message.sentAt)}
-                  </span>
-                </div>
-                <div className={styles.messageContent}>
-                  {message.content.text || message.content.url}
-                </div>
-              </div>
-              <div>
-                <button onClick={() => handleEditMessage(message.id)}>✏️</button>
-                <button onClick={() => handleDeleteMessage(message.id)}>🗑️</button>
-              </div>
-            </div>
-          ))}
+            {messages.map((m) => (
+              <MessageItem key={m.id} message={m} onEdit={handleEdit} onDelete={handleDelete} />
+            ))}
           </div>
-          <div className={styles.inputPanel}>
-            <input
-              type="text"
-              className={styles.input}
-              placeholder="Type your message..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-            />
-            <button className={styles.sendButton} onClick={handleSendMessage}>
-              Send
-            </button>
-          </div>
+          <MessageInput value={input} onChange={setInput} onSend={handleSend} />
         </>
-      }
+      )}
     </div>
   );
 };
-
-export { ChatPanel };
