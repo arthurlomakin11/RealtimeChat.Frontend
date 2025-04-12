@@ -27,3 +27,8 @@
 .outgoing .messageContent {
     background-color: var(--primary-color-light);
 }
+
+.interactionButton {
+    margin: 0 1px;
+    cursor: pointer;
+}

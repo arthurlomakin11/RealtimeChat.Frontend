@@ -18,8 +18,8 @@ export const MessageItem = ({ message, onEdit, onDelete }: {
       </div>
     </div>
     <div>
-      <button onClick={() => onEdit(message.id)}>✏️</button>
-      <button onClick={() => onDelete(message.id)}>🗑️</button>
+      <button className={styles.interactionButton} onClick={() => onEdit(message.id)}>✏️</button>
+      <button className={styles.interactionButton} onClick={() => onDelete(message.id)}>🗑️</button>
     </div>
   </div>
 );
